@@ -1,0 +1,34 @@
+Sub ChenHinhAnh()
+    Dim PicList() As Variant
+    Dim PicFormat As String
+    Dim Rng As Range
+    Dim Cell As Range
+    Dim sShape As Shape
+    Dim i As Long
+
+    ' Allow the user to select multiple pictures
+    PicList = Application.GetOpenFilename(PicFormat, MultiSelect:=True)
+
+    ' Check if the user selected any pictures
+    If IsArray(PicList) Then
+        ' Prompt the user to select a range of cells
+        Set Rng = Application.InputBox("Select the range of cells where you want to insert the images:", Type:=8)
+
+        ' Ensure the selected range has enough cells to accommodate all selected images
+        If Rng.Count < UBound(PicList) - LBound(PicList) + 1 Then
+            MsgBox "The selected range does not have enough cells for the selected images.", vbExclamation
+            Exit Sub
+        End If
+
+        ' Insert each picture into the corresponding cell in the selected range
+        i = LBound(PicList)
+        For Each Cell In Rng
+            If i > UBound(PicList) Then Exit For
+            Set sShape = ActiveSheet.Shapes.AddPicture(PicList(i), msoFalse, msoCTrue, Cell.Left, Cell.Top, Cell.Width, Cell.Height)
+            ' Set the properties to move and size with cells
+            sShape.Placement = xlMoveAndSize
+            i = i + 1
+        Next Cell
+    End If
+End Sub
+
